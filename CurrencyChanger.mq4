@@ -1,11 +1,15 @@
 //+------------------------------------------------------------------+
 //|                                              CurrencyChanger.mq4 |
+//|                                   Michael Douglas Torres Azevedo |
+//|                                           michael.dta1@gmail.com |
 //|                                  Copyright 2025, MetaQuotes Ltd. |
-//|                                             https://www.mql5.com |
+//|                                  https://github.com/michael-dta/ |
 //+------------------------------------------------------------------+
-#property copyright "Copyright 2025, MetaQuotes Ltd."
-#property link      "https://www.mql5.com"
-#property version   "1.00"
+#property copyright     "Copyright 2025, MetaQuotes Ltd."
+#property link          "https://github.com/michael-dta/"
+#property version       "1.00"
+#property description   "CurrencyChanger v1.00"
+//
 #property strict
 #property indicator_chart_window
 //+------------------------------------------------------------------+
@@ -111,14 +115,24 @@ void OnChartEvent(const int id,
 {
    if(id == CHARTEVENT_OBJECT_CLICK)
    {
+      int curIndex = -1;
+      
       for(int i = 0 ; i < arrSize; i++)
       {
-         if(StringFind(sparam, arrCurrencies[i]) > 0)
-         {
-            ChartSetSymbolPeriod(0, arrSymbols[i], Period());
-            return;
-         }
+         ObjectSetInteger(0, sparam, OBJPROP_STATE,        false);
+         ObjectSetInteger(0, sparam, OBJPROP_COLOR,        inpNormalTxtClr);
+         ObjectSetInteger(0, sparam, OBJPROP_BGCOLOR,      inpNormalBgClr);
+         ObjectSetInteger(0, sparam, OBJPROP_BORDER_COLOR, inpNormalBdrClr);
+         
+         if(StringFind(sparam, arrCurrencies[i]) > 0) curIndex = i;
       }
+      
+      ChartSetSymbolPeriod(0, arrSymbols[curIndex], Period());
+            
+      ObjectSetInteger(0, sparam, OBJPROP_STATE,        true);
+      ObjectSetInteger(0, sparam, OBJPROP_COLOR,        inpSelectedTxtClr);
+      ObjectSetInteger(0, sparam, OBJPROP_BGCOLOR,      inpSelectedBgClr);
+      ObjectSetInteger(0, sparam, OBJPROP_BORDER_COLOR, inpSelectedBdrClr);
    }
    //--- End Of Function
 }
@@ -128,6 +142,7 @@ void OnChartEvent(const int id,
 void OnDeinit(const int reason)
 {
    ObjectsDeleteAll(0, PREFFIX_OBJNAME);
+   ChartRedraw();
 }
 //+------------------------------------------------------------------+
 //| CreateButton function                                            |
@@ -136,6 +151,7 @@ bool CreateButton(const int id, const string currency, const int i)
 {
    bool result = false;
    string name = PREFFIX_OBJNAME + "_BTN_" + currency;
+   Print(__FUNCTION__+": obj_name = "+name);
    if(ObjectCreate(id, name, OBJ_BUTTON, 0, 0, 0))
    {
       ObjectSetInteger(id, name, OBJPROP_XDISTANCE,      inpMoveX + (inpWidth * i));
@@ -145,6 +161,7 @@ bool CreateButton(const int id, const string currency, const int i)
       ObjectSetInteger(id, name, OBJPROP_BGCOLOR,        inpNormalBgClr);
       ObjectSetInteger(id, name, OBJPROP_COLOR,          inpNormalTxtClr);
       ObjectSetInteger(id, name, OBJPROP_BORDER_COLOR,   inpNormalBdrClr);
+      ObjectSetInteger(id, name, OBJPROP_STATE,          false);
       ObjectSetString( id, name, OBJPROP_TEXT,           currency);
       result = true;
    }
