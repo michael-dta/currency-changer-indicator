@@ -33,6 +33,7 @@ extern   string      inpCurrencies     = "AUD,CAD,CHF,EUR,GBP,JPY,NZD,USD";   //
 extern   string      inpPreffix        = "";    // Preffix of each symbol
 extern   string      inpSymbols        = "AUDCAD,CADCHF,CHFJPY,EURGBP,GBPCAD,USDJPY,NZDUSD,USDCAD"; // Symbols separated by commas
 extern   string      inpSuffix         = "m";   // Suffix of each symbol
+extern   int         inpButtonsPerLine = 8;     // Buttons per line
 extern   int         inpMoveX          = 5;     // Horizontal space in pixels from left side
 extern   int         inpMoveY          = 5;     // Vertical space in pixels from top side
 extern   int         inpWidth          = 160;   // Button width in pixels
@@ -152,10 +153,11 @@ bool CreateButton(const int id, const string currency, const int i)
    bool result = false;
    string name = PREFFIX_OBJNAME + "_BTN_" + currency;
    Print(__FUNCTION__+": obj_name = "+name);
+   int j = i;
    if(ObjectCreate(id, name, OBJ_BUTTON, 0, 0, 0))
    {
-      ObjectSetInteger(id, name, OBJPROP_XDISTANCE,      inpMoveX + (inpWidth * i));
-      ObjectSetInteger(id, name, OBJPROP_YDISTANCE,      inpMoveY);
+      ObjectSetInteger(id, name, OBJPROP_XDISTANCE,      inpMoveX + (inpWidth * (i - int(i / inpButtonsPerLine)*inpButtonsPerLine)));
+      ObjectSetInteger(id, name, OBJPROP_YDISTANCE,      inpMoveY + (inpHeight * int(i / inpButtonsPerLine)));
       ObjectSetInteger(id, name, OBJPROP_XSIZE,          inpWidth);
       ObjectSetInteger(id, name, OBJPROP_YSIZE,          inpHeight);
       ObjectSetInteger(id, name, OBJPROP_BGCOLOR,        inpNormalBgClr);
